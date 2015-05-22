@@ -68,9 +68,16 @@ module RSpec
           end
         end
 
-        def org_link(file, line)
+        def output_rerun_link(example)
+          @output.puts "#{section_indent example} [[elisp:(rspec-run-single-file '(\"#{absolute_path example.metadata[:file_path]}\" . \"#{example.metadata[:line_number]}\") (rspec-core-options))][Rerun]]"
+        end
+
+        def absolute_path(path)
           current_dir = Dir.pwd
-          "[[#{current_dir}#{file}::#{line}][#{file[1..-1]}:#{line}]]"
+          File.expand_path "#{current_dir}/#{path}"
+        end
+        def org_link(file, line)
+          "[[#{absolute_path file}::#{line}][#{file[1..-1]}:#{line}]]"
         end
         # outputs the backtrace of an exception
         def output_backtrace(exception, example)
@@ -111,6 +118,12 @@ module RSpec
 
         def start(example_count)
           super(example_count)
+          # Maybe add: eval: (setq org-confirm-elisp-link-function nil);
+          @output.puts "# -*- mode: org; eval: (rspec-mode 1); -*-"
+          @output.puts "#+VISIBILITY: children"
+          @output.puts "#+DRAWERS: DETAILS PROPERTIES"
+          @output.puts "#+TODO: FAILED PENDING_FIXED PENDING | SUCCESS\n"
+          @output.flush
         end
 
         # returns the org section level for an example or an example_group
@@ -144,6 +157,7 @@ module RSpec
           # @header_red = true
           # @example_group_red = true
           @output.puts "#{section_markup example} #{failure_style.upcase} #{example.description}"
+          output_rerun_link(example)
           output_exception(exception, example)
           output_backtrace(exception, example)
           output_failure_properties example
@@ -177,11 +191,6 @@ module RSpec
           end
           @output.puts "Finished in *#{duration} seconds*"
           @output.puts totals
-          @output.puts "  :PROPERTIES:"
-          @output.puts "    :VISIBILITY: children"
-          @output.puts "  :END:"
-          @output.puts "#+DRAWERS: DETAILS PROPERTIES"
-          @output.puts "#+TODO: FAILED PENDING_FIXED PENDING | SUCCESS"
           @output.flush
         end
 
