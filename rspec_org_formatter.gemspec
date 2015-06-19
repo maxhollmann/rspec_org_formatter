@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.authors = ['Alessandro Piras']
   s.email = 'laynor@gmail.com'
   s.files         = `git ls-files`.split($/)
-  s.add_dependency "rspec", ">= 2.6.0"
+  s.add_dependency "rspec", ">= 2.0.0"
   s.require_path = 'lib'
   s.homepage = 'https://github.com/laynor/rspec_org_formatter'
   s.add_development_dependency 'bundler', '~> 1.0'
@@ -15,4 +15,3 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rspec', '~> 2.4'
   s.add_development_dependency 'rspec_org_formatter', '~> 0.2.2'
 end
-
